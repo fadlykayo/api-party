@@ -9,12 +9,30 @@ youtube.setKey(config.youtube_key)
 process.env.mashapeKey = config.mashape_key
 
 router.get('/:key', function (req, res) {
-  let opt = req.params.key
-  getGames(function (list) {
-    getTrailers(list, function (data) {
-      res.send(data)
+  igdb.games({
+    limit: 50,
+    offset: 0,
+    fields: 'name,rating,popularity,url',
+    order: 'rating:desc',
+    search: req.params.key
+  }).then(function (data) {
+    // console.log(data.body)
+    let items = []
+    data.body.forEach(function (games) {
+      youtube.search(`${games.name} game trailer`, 1, function (error, result) {
+        items.push({
+          name: games.name,
+          rating: games.rating,
+          popularity: games.popularity,
+          url: games.url,
+          youtube: `https://youtu.be/${result.items[0].id.videoId}`
+        })
+        if (items.length === data.body.length) res.send(items)
+      })
     })
-  }, opt)
+  }).catch(function (err) {
+    res.send(err)
+  })
 })
 
 const getGames = (cb, test) => {
