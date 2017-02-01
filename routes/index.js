@@ -10,8 +10,8 @@ router.get('/api', function (req, res, next) {
   res.send('api')
 })
 
-router.get('/api/twitter', function (req, res, next) {
-  res.send('twitter')
+router.get('/api/gamedb', function (req, res, next) {
+  res.send('gamedb')
 })
 
 // router.get('/api/twitter/search', function (req, res, next) {
